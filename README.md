@@ -29,33 +29,33 @@
 ## Project setup
 
 ```bash
-$ bun install
+bun install
 ```
 
 ## Compile and run the project
 
 ```bash
 # development
-$ bun run start
+bun start
 
 # watch mode
-$ bun run start:dev
+bun start:dev
 
 # production mode
-$ bun run start:prod
+bun start:prod
 ```
 
 ## Run tests
 
 ```bash
 # unit tests
-$ bun run test
+bun run test
 
 # e2e tests
-$ bun run test:e2e
+bun test:e2e
 
 # test coverage
-$ bun run test:cov
+bun test:cov
 ```
 
 ## Resources
