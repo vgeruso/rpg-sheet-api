@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String       @id @default(uuid())
+  name       String
+  email      String
+  username   String
+  password   String
+  createdAt  DateTime
+  updatedAt  DateTime
+  Table      Table[]
+  Character  Character[]
+  user_table UserTable[]
+}
+
+model UserTable {
+  id       String  @id @default(uuid())
+  userId   String
+  tableId  String
+  isMaster Boolean
+  user     User    @relation(fields: [userId], references: [id])
+  table    Table   @relation(fields: [tableId], references: [id], onDelete: Cascade)
+}
+
+model Table {
+  id         String       @id @default(uuid())
+  name       String
+  system     Sytem        @default(OLDRAGON)
+  createdAt  DateTime
+  updatedAt  DateTime
+  Character  Character[]
+  User       User?        @relation(fields: [userId], references: [id])
+  userId     String?
+  user_table UserTable[]
+}
+
+model Character {
+  id                     String     @id @default(uuid())
+  name                   String
+  race                   Race
+  class                  Class
+  alignment              Alignment  @default(NEUTRAL)
+  physycalCharacteristcs String     @db.VarChar(1000)
+  player                 String
+  tableId                String
+  atributesId            String     @unique
+  createdAt              DateTime
+  updatedAt              DateTime
+  atributes              Atributes  @relation(fields: [atributesId], references: [id], onDelete: Cascade)
+  user                   User       @relation(fields: [player], references: [id], onDelete: Cascade)
+  table                  Table      @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  Inventory              Inventory?
+  Magic                  Magic[]
+  Gun                    Gun[]
+}
+
+model Atributes {
+  id              String        @id @default(uuid())
+  strengthId      String        @unique
+  dexterityId     String        @unique
+  constituitionId String        @unique
+  intelligenceId  String        @unique
+  wisdomId        String        @unique
+  charismaId      String        @unique
+  strength        Strength      @relation(fields: [strengthId], references: [id], onDelete: Cascade)
+  dexterity       Dexterity     @relation(fields: [dexterityId], references: [id], onDelete: Cascade)
+  constituition   Constituition @relation(fields: [constituitionId], references: [id], onDelete: Cascade)
+  intelligence    Intelligence  @relation(fields: [intelligenceId], references: [id], onDelete: Cascade)
+  wisdom          Wisdom        @relation(fields: [wisdomId], references: [id], onDelete: Cascade)
+  charisma        Charisma      @relation(fields: [charismaId], references: [id], onDelete: Cascade)
+  Character       Character?
+}
+
+model Strength {
+  id         String     @id @default(uuid())
+  value      Int
+  adjustment Int
+  Atributes  Atributes?
+}
+
+model Dexterity {
+  id           String     @id @default(uuid())
+  value        Int
+  adjustment   Int
+  rogueTalents String
+  Atributes    Atributes?
+}
+
+model Constituition {
+  id          String     @id @default(uuid())
+  value       Int
+  adjustment  Int
+  resurection Int
+  Atributes   Atributes?
+}
+
+model Intelligence {
+  id                     String     @id @default(uuid())
+  value                  Int
+  aditionalLanguage      Int
+  percentLearnMagic      Int
+  aditionalsArcaneMagics String
+  Atributes              Atributes?
+}
+
+model Wisdom {
+  id                     String     @id @default(uuid())
+  value                  Int
+  adjustment             Int
+  aditionalsDivineMagics String
+  Atributes              Atributes?
+}
+
+model Charisma {
+  id                        String     @id @default(uuid())
+  value                     Int
+  maxFollowers              Int
+  adjustmentReactionPercent Int
+  livingDeadAway            String
+  Atributes                 Atributes?
+}
+
+model Inventory {
+  id          String      @id @default(uuid())
+  characterId String      @unique
+  createdAt   DateTime
+  updatedAt   DateTime
+  character   Character   @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  Equipment   Equipment[]
+}
+
+model Equipment {
+  id          String    @id @default(uuid())
+  name        String
+  weight      String
+  inventoryId String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+}
+
+model Magic {
+  id          String    @id @default(uuid())
+  characterId String
+  circle      Int
+  type        MagicType
+  range       String
+  duration    String
+  description String    @db.VarChar(1000)
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+model Gun {
+  id          String    @id @default(uuid())
+  characterId String
+  name        String
+  initiative  Int
+  baTotal     Int
+  damage      String
+  range       String
+  size        Size      @default(MD)
+  price       Int
+  weight      Float     @db.DoublePrecision()
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+enum Sytem {
+  OLDRAGON
+  CUSTOM
+}
+
+enum Race {
+  HUMAN
+  DWARF
+  ELF
+  HALFLING
+}
+
+enum Class {
+  CLERIC
+  MANOFARM
+  WIZARD
+  ROGUE
+}
+
+enum Alignment {
+  ORDERLY
+  NEUTRAL
+  CHAOTIC
+}
+
+enum MagicType {
+  ARCANE
+  DIVINE
+}
+
+enum Size {
+  SM
+  MD
+  LG
+}
