@@ -23,6 +23,12 @@
       ],
       "@app/prisma/*": [
         "libs/prisma/src/*"
+      ],
+      "@app/setup": [
+        "libs/setup/src"
+      ],
+      "@app/setup/*": [
+        "libs/setup/src/*"
       ]
     }
   }
