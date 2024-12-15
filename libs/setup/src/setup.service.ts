@@ -8,10 +8,6 @@ export class SetupService {
   private version: string;
   private author: string;
 
-  constructor() {
-    this.initSetup();
-  }
-
   getSetup(): PackageObject {
     return {
       project: this.project,
@@ -20,7 +16,7 @@ export class SetupService {
     };
   }
 
-  private async initSetup(): Promise<void> {
+  async initSetup(): Promise<void> {
     const packageJson: string = await fs.readFile('./package.json', 'utf8');
     const objectConversion: any = await JSON.parse(packageJson);
 
