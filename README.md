@@ -28,8 +28,24 @@
 
 ## Project setup
 
+1 - install package lib system
+
 ```bash
 bun install
+```
+
+2 - create file `.env` with following content:
+
+```env
+DATABASE_URL="postgresql://user:pass@localhost:5432/rpg_dev_db?schema=public&connection_limit=1"
+```
+
+## Running the prisma migrations and seeds
+
+1 - Migrate database configuration
+
+```bash
+bun prisma migrate dev
 ```
 
 ## Compile and run the project
@@ -44,6 +60,10 @@ bun start:dev
 # production mode
 bun start:prod
 ```
+
+## Access API Documentation
+
+Access the host: `http://localhost:3000/swagger`
 
 ## Run tests
 
