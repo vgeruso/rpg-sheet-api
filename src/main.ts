@@ -3,11 +3,25 @@ import { AppModule } from './app.module';
 import { SetupService } from '@app/setup';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors) => {
+        const result = errors.map((error) => ({
+          property: error.property,
+          message: error.constraints[Object.keys(error.constraints)[0]],
+        }));
+        return new BadRequestException(result);
+      },
+      stopAtFirstError: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setDescription(
@@ -24,4 +38,5 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
+
 bootstrap();
