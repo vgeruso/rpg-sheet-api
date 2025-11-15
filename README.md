@@ -31,7 +31,7 @@
 1 - install package lib system
 
 ```bash
-bun install
+pnpm install
 ```
 
 2 - create file `.env` with following content:
@@ -45,20 +45,20 @@ DATABASE_URL="postgresql://user:pass@localhost:5432/rpg_dev_db?schema=public&con
 1 - Migrate database configuration
 
 ```bash
-bun prisma migrate dev
+pnpm prisma migrate dev
 ```
 
 ## Compile and run the project
 
 ```bash
 # development
-bun start
+pnpm start
 
 # watch mode
-bun start:dev
+pnpm start:dev
 
 # production mode
-bun start:prod
+pnpm start:prod
 ```
 
 ## Access API Documentation
@@ -69,13 +69,13 @@ Access the host: `http://localhost:3000/swagger`
 
 ```bash
 # unit tests
-bun run test
+pnpm test
 
 # e2e tests
-bun test:e2e
+pnpm test:e2e
 
 # test coverage
-bun test:cov
+pnpm test:cov
 ```
 
 ## Resources
