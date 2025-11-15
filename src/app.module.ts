@@ -1,12 +1,22 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { SetupModule, SetupService } from '@app/setup';
-import { UserModule } from './user/user.module';
+import { ConfigModule } from '@nestjs/config';
+import { envSchema } from './env';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggingInterceptor } from '@shared/interceptors/logger.interceptor';
 
 @Module({
-  imports: [SetupModule, UserModule],
-  controllers: [AppController],
-  providers: [AppService, SetupService],
+  imports: [
+    ConfigModule.forRoot({
+      validate: (env) => envSchema.parse(env),
+      isGlobal: true,
+    }),
+  ],
+  controllers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+  ],
 })
 export class AppModule {}

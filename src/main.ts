@@ -1,42 +1,36 @@
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { INestApplication } from '@nestjs/common';
+import { Env, isDevEnvironment, isTestEnvironment } from './env';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SetupService } from '@app/setup';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { BadRequestException, ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from '@shared/exceptions/filter/http.exception-filter';
+import { ValidationPipe } from '@shared/pipes/validation.pipe';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: true,
-  });
+  const app: INestApplication = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      exceptionFactory: (errors) => {
-        const result = errors.map((error) => ({
-          property: error.property,
-          message: error.constraints[Object.keys(error.constraints)[0]],
-        }));
-        return new BadRequestException(result);
-      },
-      stopAtFirstError: true,
-    }),
-  );
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalPipes(ValidationPipe);
 
-  const config = new DocumentBuilder()
-    .setDescription(
-      'Documentação voltada ao conhecimento e teste das rotas dos módulos disponíveis no sistema.',
-    )
-    .setTitle('RPG Sheet CORE API')
-    .setVersion((await new SetupService().getSetup()).version)
-    .addBearerAuth()
-    .build();
+  app.enableCors();
 
-  const document = SwaggerModule.createDocument(app, config);
+  if (isDevEnvironment || isTestEnvironment) {
+    const config = new DocumentBuilder()
+      .setDescription('Documentation of endpoints system.')
+      .setTitle('RPG Sheet CORE API')
+      .setVersion('1.0.0')
+      .addBearerAuth()
+      .build();
 
-  SwaggerModule.setup('swagger', app, document);
+    const document = SwaggerModule.createDocument(app, config);
 
-  await app.listen(3000);
+    SwaggerModule.setup('api', app, document);
+  }
+
+  const configService = app.get<ConfigService<Env, true>>(ConfigService);
+  const port = configService.get('PORT', { infer: true });
+  await app.listen(port);
 }
 
 bootstrap();

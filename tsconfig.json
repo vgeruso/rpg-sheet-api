@@ -12,24 +12,35 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "typeRoots": ["@types", "./node_modules/@types"],
     "paths": {
-      "@app/prisma": [
-        "libs/prisma/src"
-      ],
-      "@app/prisma/*": [
-        "libs/prisma/src/*"
-      ],
-      "@app/setup": [
-        "libs/setup/src"
-      ],
-      "@app/setup/*": [
-        "libs/setup/src/*"
-      ]
-    }
+      "@modules/*": ["src/modules/*"],
+      "@shared/*": ["src/shared/*"],
+      "@tests/*": ["tests/*"],
+      "@services/*": ["src/services/*"],
+      "@providers/*": ["src/providers/*"],
+      "@rule-services/*": ["src/rule-services/*"],
+      "src/env": ["src/env"]
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*", "tests/**/*", "jest.config.ts", "libs"],
+  "exclude": ["__external-fixes__", "dist", "node_modules"],
+  "ngen-config": {
+    "prefix": "src/modules",
+    "templateDir": "templates",
+    "authGuardClass": "AuthGuard",
+    "auth": true,
+    "authGuardDir": "@nestjs/passport",
+    "noSubdir": true,
+    "casing": "kebab"
   }
 }
