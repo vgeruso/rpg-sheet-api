@@ -8,161 +8,166 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           String         @id @default(uuid())
-  name         String
-  email        String
-  username     String
-  password     String
-  createdAt    DateTime
-  updatedAt    DateTime
-  campaign     Campaign[]
-  character    Character[]
-  userCampaign UserCampaign[]
-}
-
-model UserCampaign {
-  id       String   @id @default(uuid())
-  userId   String
-  tableId  String
-  isMaster Boolean
-  user     User     @relation(fields: [userId], references: [id])
-  campaign Campaign @relation(fields: [tableId], references: [id], onDelete: Cascade)
-}
-
 model Campaign {
-  id        String         @id @default(uuid())
-  name      String
-  system    Sytem          @default(OLDRAGON)
-  createdAt DateTime
-  updatedAt DateTime
-  Character Character[]
-  User      User           @relation(fields: [userId], references: [id])
-  userId    String
-  userTable UserCampaign[]
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  resume      String
+  isActive    Boolean     @default(true) @map("is_active")
+  system      System      @default(od)
+  master      String
+  createdAt   DateTime    @map("created_at")
+  updatedAt   DateTime    @map("updated_at")
+  Character   Character[]
+
+  @@map("campaign")
 }
 
 model Character {
-  id                     String         @id @default(uuid())
-  name                   String
-  race                   Race
-  class                  Class
-  subclass               SUBCLASS
-  alignment              Alignment      @default(NEUTRAL)
-  level                  Int
-  experience             Int
-  lifePoints             Int
-  armorClass             Int
-  initiative             Int
-  baseAttackC            Int
-  baseAttackD            Int
-  savingThrowC           Int
-  savingThrowD           Int
-  savingThrowS           Int
-  initialMoviment        Int
-  physycalCharacteristcs String         @db.VarChar(1000)
-  personality            String         @db.VarChar(1000)
-  history                String         @db.VarChar(1000)
-  goldPieces             Int
-  silverPieces           Int
-  copperPieces           Int
-  actualCharge           Int
-  maximumCharge          Int
-  player                 String
-  campaignId             String?
-  createdAt              DateTime
-  updatedAt              DateTime
-  Campaign               Campaign?      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  User                   User           @relation(fields: [player], references: [id], onDelete: Cascade)
-  Inventory              Inventory[]
-  Grimoire               Grimoire[]
-  Attack                 Attack[]
-  Strength               Strength?
-  Dexterity              Dexterity?
-  Constituition          Constituition?
-  Intelligence           Intelligence?
-  Wisdom                 Wisdom?
-  Charisma               Charisma?
+  id                                String         @id @default(uuid())
+  name                              String
+  race                              Race
+  classId                           Class
+  subclassId                        Subclass
+  alignment                         Alignment      @default(neutral)
+  level                             Int
+  experience                        Int
+  lifePoints                        Int            @map("life_points")
+  armorClass                        Int            @map("armor_class")
+  initiative                        Int
+  baseAttackC                       Int            @map("base_attack_c")
+  baseAttackD                       Int            @map("base_attack_d")
+  savingThrowC                      Int            @map("saving_throw_c")
+  savingThrowD                      Int            @map("saving_throw_d")
+  savingThrowS                      Int            @map("saving_throw_s")
+  initialMoviment                   Int            @map("initial_moviment")
+  physicalCharacteristics           String         @map("physical_characteristics") @db.VarChar(1000)
+  personality                       String         @db.VarChar(1000)
+  othersCharacteristicAndHabilities String         @map("others_characteristic_and_habilities")
+  history                           String         @db.VarChar(1000)
+  avatar                            String
+  goldPieces                        Int            @map("gold_pieces")
+  silverPieces                      Int            @map("silver_pieces")
+  copperPieces                      Int            @map("copper_pieces")
+  actualCharge                      Int            @map("actual_charge")
+  maximumCharge                     Int            @map("maximum_charge")
+  player                            String
+  campaignId                        String?        @map("campaign_id")
+  isActive                          Boolean        @map("is_active")
+  createdAt                         DateTime       @map("created_at")
+  updatedAt                         DateTime       @map("updated_at")
+  Campaign                          Campaign?      @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  Inventory                         Inventory[]
+  Grimoire                          Grimoire[]
+  Attack                            Attack[]
+  Strength                          Strength?
+  Dexterity                         Dexterity?
+  Constituition                     Constituition?
+  Intelligence                      Intelligence?
+  Wisdom                            Wisdom?
+  Charisma                          Charisma?
+
+  @@map("character")
 }
 
 model Strength {
   id          String    @id @default(uuid())
   value       Int
-  adjustment  Int
-  characterId String    @unique
+  modifier    Int
+  characterId String    @unique @map("character_id")
   Character   Character @relation(fields: [characterId], references: [id])
+
+  @@map("strength")
 }
 
 model Dexterity {
   id           String    @id @default(uuid())
   value        Int
-  adjustment   Int
-  rogueTalents String
-  characterId  String    @unique
+  modifier     Int
+  rogueTalents String    @map("rogue_talents")
+  characterId  String    @unique @map("character_id")
   Character    Character @relation(fields: [characterId], references: [id])
+
+  @@map("dexterity")
 }
 
 model Constituition {
   id          String    @id @default(uuid())
   value       Int
-  adjustment  Int
+  modifier    Int
   resurection Int
-  characterId String    @unique
+  characterId String    @unique @map("character_id")
   Character   Character @relation(fields: [characterId], references: [id])
+
+  @@map("constituition")
 }
 
 model Intelligence {
   id                     String    @id @default(uuid())
   value                  Int
-  aditionalLanguage      Int
-  percentLearnMagic      Int
-  aditionalsArcaneMagics String
-  characterId            String    @unique
+  modifier               Int
+  aditionalLanguage      Int       @map("additional_language")
+  percentLearnMagic      Int       @map("percent_learn_magic")
+  aditionalsArcaneMagics String    @map("additional_arcane_magics")
+  characterId            String    @unique @map("character_id")
   Character              Character @relation(fields: [characterId], references: [id])
+
+  @@map("intelligence")
 }
 
 model Wisdom {
   id                     String    @id @default(uuid())
   value                  Int
-  adjustment             Int
-  aditionalsDivineMagics String
-  characterId            String    @unique
+  modifier               Int
+  aditionalsDivineMagics String    @map("additional_divine_magics")
+  characterId            String    @unique @map("character_id")
   Character              Character @relation(fields: [characterId], references: [id])
+
+  @@map("winsdom")
 }
 
 model Charisma {
   id                        String    @id @default(uuid())
   value                     Int
-  maxFollowers              Int
-  adjustmentReactionPercent Int
-  livingDeadAway            String
-  characterId               String    @unique
+  modifier                  Int
+  maxFollowers              Int       @map("max_followers")
+  adjustmentReactionPercent Int       @map("adjustment_reaction_percent")
+  livingDeadAway            String    @map("living_dead_away")
+  characterId               String    @unique @map("character_id")
   Character                 Character @relation(fields: [characterId], references: [id])
+
+  @@map("charisma")
 }
 
 model Attack {
   id          String    @id @default(uuid())
-  characterId String
-  EquipmentId String
+  characterId String    @map("character_id")
+  EquipmentId String    @map("equipment_id")
   Equipment   Equipment @relation(fields: [EquipmentId], references: [id], onDelete: Cascade)
   Character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@map("attack")
 }
 
 model Grimoire {
   id          String    @id @default(uuid())
   use         Int
-  characterId String
+  characterId String    @map("character_id")
+  magicId     String    @map("magic_id")
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  magicId     String
   Magic       Magic     @relation(fields: [magicId], references: [id], onDelete: Cascade)
+
+  @@map("grimoire")
 }
 
 model Inventory {
   id          String    @id @default(uuid())
-  characterId String    @unique
+  characterId String    @unique @map("character_id")
+  equipmentId String    @map("equipment_id")
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  equipmentId String
   Equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@map("inventory")
 }
 
 model Equipment {
@@ -173,21 +178,24 @@ model Equipment {
   price         Int
   coin          Coin
   type          EquipmentType
-  isMagic       Boolean
+  system        System
+  isMagic       Boolean       @default(false) @map("is_magic")
   size          Size
   equipped      Boolean
-  weaponType    WeaponType?
-  damageType    DamageType?
+  weaponType    WeaponType?   @map("weapon_type")
+  damageType    DamageType?   @map("damage_type")
   damage        String?
-  damageBonus   Int?
-  armorBonus    Int?
-  attackBonusC  Int?
-  attackBonusD  Int?
+  damageBonus   Int?          @map("damage_bonus")
+  armorBonus    Int?          @map("armor_bonus")
+  attackBonusC  Int?          @map("attack_bonus_c")
+  attackBonusD  Int?          @map("attack_bonus_d")
   range         Int?
-  increasesLoad Int?
+  increasesLoad Int?          @map("increases_load")
   description   String        @db.VarChar(1000)
   Attack        Attack[]
   Inventory     Inventory[]
+
+  @@map("equipment")
 }
 
 model Magic {
@@ -197,90 +205,118 @@ model Magic {
   circle         Int
   range          String
   duration       String
-  protectivePlay String?
+  system         System
+  protectivePlay String?    @map("protective_play")
   description    String     @db.VarChar(1000)
   Grimoire       Grimoire[]
+
+  @@map("magic")
 }
 
 enum Coin {
-  COPPER
-  SILVER
-  GOLD
+  copper
+  silver
+  gold
+
+  @@map("coin")
 }
 
 enum WeaponType {
-  MELEE
-  DISTANCE
+  melee
+  distance
+
+  @@map("weapon_type")
 }
 
 enum DamageType {
-  IMPACTFUL
-  PIERCING
-  CUTTING
+  impactful
+  piercing
+  cutting
+
+  @@map("damage_type")
 }
 
 enum EquipmentType {
-  ARMOR
-  WEAPON
-  SHIELD
-  GENERAL
-  CONTAINERS
-  MOUNTING
+  armor
+  weapon
+  shield
+  general
+  containers
+  mounting
+
+  @@map("equipment_type")
 }
 
-enum Sytem {
-  OLDRAGON
-  CUSTOM
+enum System {
+  od
+  ded
+  fda
+  torm
+  custom
+
+  @@map("system")
 }
 
 enum Race {
-  HUMAN
-  DWARF
-  ELF
-  HALFELF
-  HALFLING
-  GNOME
+  human
+  dwarf
+  elf
+  halfelf
+  halflingHALFLING
+  gnome
+
+  @@map("race")
 }
 
 enum Class {
-  ROGUE
-  WIZARD
-  CLERIC
-  FIGHTER
+  rogue
+  wizard
+  cleric
+  fighter
+
+  @@map("class")
 }
 
-enum SUBCLASS {
-  BARBARIAN
-  PALADIN
-  DWARFADVENTURER
-  ARCHER
-  DRUID
-  ACADEMIC
-  SHAMAN
-  OUTLAWED
-  RANGER
-  BARD
-  KILLER
-  HALFLINGADVENTURER
-  ILLUSIONIST
-  NECROMANTE
-  WITCHER
-  ELFADVENTURER
+enum Subclass {
+  barbarian
+  paladin
+  dwarfadventurer
+  archer
+  druid
+  academic
+  shaman
+  outlawed
+  ranger
+  bard
+  killer
+  halflingadventurer
+  illusionist
+  necromancer
+  witcher
+  elfadventurer
+
+  @@map("subclass")
 }
 
 enum Alignment {
-  ORDERLY
-  NEUTRAL
-  CHAOTIC
+  orderly
+  neutral
+  chaotic
+
+  @@map("alignment")
 }
 
 enum MagicType {
-  ARCANE
-  DIVINE
+  arcane
+  divine
+
+  @@map("magic_type")
 }
 
 enum Size {
-  SM
-  MD
-  LG
+  sm
+  md
+  lg
+
+  @@map("size")
 }
